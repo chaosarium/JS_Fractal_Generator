@@ -34,14 +34,24 @@ function escape_time(c, iteration_depth, formula) {
 	}
 }
 
-// pixel manipulation
-// var main_canvas = document.getElementById('fractal_viewport');
-// var canvas_width = main_canvas.width;
-// var canvas_height = main_canvas.height;
+// Set up canvas
+var main_canvas = document.getElementById('fractal_viewport')
+var canvas_width = main_canvas.width
+var canvas_height = main_canvas.height
+
+// get pixel_data for later manipulation
+var canvas_context = main_canvas.getContext('2d')
+// pixel data structure seems to be [r, g, b, l, r, g, b, l, ..., r, g, b, l]
+var pixel_data = canvas_context.getImageData(0, 0, canvas_width, canvas_height)
 
 
+// function to update image according to the pixel information and the x y coordinate of the pixel
+function update_pixel([r, g, b, l], x, y) {
+	main_canvas.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray([r, g, b, l]), 1, 1), x, y)
+}
 
 
+update_pixel([155, 155, 155, 155], 12, 12)
 
 
 
@@ -90,4 +100,3 @@ for (let i = 1; i <= y_dim; i++) {
 	imaginary = imaginary - y_step
 	renderer_console_output = renderer_console_output + "\n"
 }
-console.log(renderer_console_output)
