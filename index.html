@@ -11,9 +11,45 @@
   </style>
 </head>
 <body>
-  <h1>Hello World</h1>
-  <canvas id="fractal_viewport" width="1200" height="1200"></canvas>
-  <button onclick="render_trigger()">button</button>
+  <h1>Mandelbrot Set Renderer in Javascript</h1>
+  <h2>About the mandelbrot Set</h2>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae error similique temporibus possimus porro voluptatibus laudantium unde aliquam nam optio!</p>
+    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Inventore, omnis incidunt! Ex libero, magnam minus veritatis illo voluptas quia architecto?</p>
+  <h2>Instructions</h2>
+    <ol>
+      <li>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nulla, ratione?</li>
+      <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet, deleniti!</li>
+      <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut, aspernatur.</li>
+    </ol>
+  <h2>How it works</h2>
+    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nulla cum excepturi aliquid numquam nihil obcaecati nostrum, ipsa fugiat quam quia voluptatum nesciunt facilis eos, atque vel commodi consequuntur sit praesentium.</p>
+
+
+  <h2>Rendering parameters</h2>
+    
+
+    <label for="iteration_depth">Iteration Depth</label>
+    <input type="number" id="iteration_depth">
+
+    <label for="x_coordinate">x-coordinate</label>
+    <input type="number" id="x_coordinate">
+
+    <label for="y_coordinate">y-coordinate</label>
+    <input type="number" id="y_coordinate">
+
+    <label for="zoom_level">Zoom Level</label>
+    <input type="number" id="zoom_level">
+
+    <label for="julia_tggle">Julia Set</label>
+    <input type="checkbox" id="julia_tggle">
+
+  <hr>
+
+  <h2>Result</h2>
+    <canvas id="fractal_viewport" width="200" height="200"></canvas>
+    <button onclick="render_trigger()">button</button>
+
+
 </body>
 <script src="main.js"></script>
 </html>

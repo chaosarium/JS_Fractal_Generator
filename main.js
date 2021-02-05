@@ -91,6 +91,7 @@ function render_fractal(x_min, x_max, y_min, y_max, iteration_depth) {
 		}
 		imaginary = imaginary - y_step
 		renderer_console_output = renderer_console_output + "\n"
+		console.log("row " + i + " of " + y_dim)
 	}
 }
 
