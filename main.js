@@ -79,7 +79,7 @@ function render_fractal(x_min, x_max, y_min, y_max, iteration_depth) {
 	for (let i = 1; i <= y_dim; i++) {
 		var real = x_min
 		for (let j = 1; j <= x_dim; j++) {
-				if(escape_time([real, imaginary], 100, mandelbrot_altorhthm) == Infinity) {
+				if(escape_time([real, imaginary], iteration_depth, mandelbrot_altorhthm) == Infinity) {
 					renderer_console_output = renderer_console_output + "X"
 					update_pixel([0, 0, 0, 255], j, i)
 				}
@@ -96,7 +96,7 @@ function render_fractal(x_min, x_max, y_min, y_max, iteration_depth) {
 }
 
 function render_trigger() {
-	render_fractal(x_min, x_max, y_min, y_max, 10)
+	render_fractal(x_min, x_max, y_min, y_max, 1000)
 }
 
 console.log(renderer_console_output)
