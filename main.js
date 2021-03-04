@@ -1,10 +1,6 @@
-// Set up canvas
-var main_canvas = document.getElementById('fractal_viewport')
-// get canvas details for later manipulation
-var canvas_width = main_canvas.width
-var canvas_height = main_canvas.height
-var canvas_context = main_canvas.getContext('2d')
-var renderer_console_output = ""
+// =================================
+// ----------Mathematics------------
+// =================================
 
 // return the product of two complex numbers
 function complex_product(c1, c2) {
@@ -26,8 +22,8 @@ function complex_magnitude_squared(c) {
 	return c[0] * c[0] + c[1] * c[1]
 }
 
-// function to return number of iterations processed before the magnitude of f(z) escapes
-function escape_time(c, iteration_depth, formula) {
+// function to return number of iterations processed before the magnitude of f(z) escapes given c value, 
+function calculate_escape_time(c, iteration_depth, formula) {
 	var z = [0, 0]
 	var i = 1
 	while (i <= iteration_depth && complex_magnitude_squared(z) < 4) {
@@ -42,23 +38,48 @@ function escape_time(c, iteration_depth, formula) {
 	}
 }
 
+colouring_altorithms = {
+	"linear": function(x){return x},
+	"square": function(x){return x*x},
+	"sqrt": function(x){return Math.sqrt(x)},
+	"log": function(x){return Math.log(x)},
+}
+
+// =================================
+// ---------Canvas Setup------------
+// =================================
+
+// Set up canvas
+var main_canvas = document.getElementById('fractal_viewport')
+// get canvas details for later manipulation
+var canvas_width = main_canvas.width
+var canvas_height = main_canvas.height
+var canvas_context = main_canvas.getContext('2d')
+var renderer_console_output = ""
+
+// =================================
+// -------Pixel manipulation--------
+// =================================
+
 // function to update image according to the pixel information and the x y coordinate of the pixel
 function update_pixel([r, g, b, l], x, y) {
 	main_canvas.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray([r, g, b, l]), 1, 1), x, y)
 }
 
-update_pixel([155, 155, 155, 155], 12, 12)
-
-
-
-var x_min = -2
-var x_max = 2
-var y_min = -2
-var y_max = 2
-
+// colour ramp
+function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_altorithm_name) {
+	percentile = colouring_altorithms[colouring_altorithm_name](escape_time) / colouring_altorithms[colouring_altorithm_name](max_depth);
+	resultant_rgba = [
+		Math.round(begin_rgba[0] + ((end_rgba[0] - begin_rgba[0]) * percentile)),
+		Math.round(begin_rgba[2] + ((end_rgba[2] - begin_rgba[2]) * percentile)),
+		Math.round(begin_rgba[1] + ((end_rgba[1] - begin_rgba[1]) * percentile)),
+		255
+	]
+	return resultant_rgba
+}
 
 // render fractal image according on canvas according to parameters
-function render_fractal(x_min, x_max, y_min, y_max, iteration_depth) {
+function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, begin_rgba, end_rgba, colouring_altorithm_name) {
 	// process rendering parameters
 	var x_dim = canvas_width
 	var y_dim = canvas_height
@@ -79,32 +100,38 @@ function render_fractal(x_min, x_max, y_min, y_max, iteration_depth) {
 	for (let i = 1; i <= y_dim; i++) {
 		var real = x_min
 		for (let j = 1; j <= x_dim; j++) {
-				if(escape_time([real, imaginary], iteration_depth, mandelbrot_altorhthm) == Infinity) {
-					renderer_console_output = renderer_console_output + "X"
-					update_pixel([0, 0, 0, 255], j, i)
+				var escape_time = calculate_escape_time([real, imaginary], iteration_depth, mandelbrot_altorhthm)
+				// if fully escape
+				if(escape_time == Infinity) {
+					update_pixel(end_rgba, j, i)
 				}
+				// if partially escape
 				else {
-					renderer_console_output = renderer_console_output + " "
-					update_pixel([255, 255, 255, 255], j, i)
+					update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_altorithm_name), j, i)
 				}
 			real = real + x_step
 		}
 		imaginary = imaginary - y_step
-		renderer_console_output = renderer_console_output + "\n"
 		console.log("row " + i + " of " + y_dim)
 	}
 }
 
+// =================================
+// -------Events Handeling----------
+// =================================
+
+// Render button
 function render_trigger() {
-	render_fractal(x_min, x_max, y_min, y_max, 1000)
+	render_fractal(x_min, x_max, y_min, y_max, 1000, [143,255,255,255], [0,153,0,255],"sqrt")
 }
 
-console.log(renderer_console_output)
+// =================================
+// ----------Playground-------------
+// =================================
 
+update_pixel([155, 155, 155, 155], 12, 12)
 
-
-
-
-
-
-
+var x_min = -2
+var x_max = 2
+var y_min = -2
+var y_max = 2
