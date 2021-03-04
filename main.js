@@ -17,6 +17,10 @@ function mandelbrot_altorhthm(z, c) {
 	return complex_addition(complex_product(z, z), c)
 }
 
+function square_mandelbrot_altorhthm(z, c) {
+	return complex_addition(complex_product(complex_product(z, z), z), c)
+}
+
 // returns the magnitude of complex number c
 function complex_magnitude_squared(c) {
 	return c[0] * c[0] + c[1] * c[1]
@@ -28,6 +32,21 @@ function calculate_escape_time(c, iteration_depth, formula) {
 	var i = 1
 	while (i <= iteration_depth && complex_magnitude_squared(z) < 4) {
 		z = formula(z, c)
+		i++
+	}
+	if (i > iteration_depth) {
+		return Infinity
+	}
+	else {
+		return i
+	}
+}
+
+function calculate_julia_escape_time(c, iteration_depth, formula, julia_value) {
+	var z = c
+	var i = 1
+	while (i <= iteration_depth && complex_magnitude_squared(z) < 4) {
+		z = formula(z, julia_value)
 		i++
 	}
 	if (i > iteration_depth) {
@@ -79,7 +98,7 @@ function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_alto
 }
 
 // render fractal image according on canvas according to parameters
-function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, begin_rgba, end_rgba, colouring_altorithm_name) {
+function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, julia_mode, begin_rgba, end_rgba, colouring_altorithm_name, julia_value = [0, 0]) {
 	// process rendering parameters
 	var x_dim = canvas_width
 	var y_dim = canvas_height
@@ -95,24 +114,48 @@ function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, begin_rgba,
 	console.log("y_dim: " + y_dim)
 	console.log("x_step: " + x_step)
 	console.log("y_step: " + y_step)
-	// iterate by rows
-	var imaginary = y_max
-	for (let i = 1; i <= y_dim; i++) {
-		var real = x_min
-		for (let j = 1; j <= x_dim; j++) {
-				var escape_time = calculate_escape_time([real, imaginary], iteration_depth, mandelbrot_altorhthm)
-				// if fully escape
-				if(escape_time == Infinity) {
-					update_pixel(end_rgba, j, i)
+	if(julia_mode) {
+		console.log("julia enabled")
+			// iterate by rows
+			var imaginary = y_max
+			for (let i = 1; i <= y_dim; i++) {
+				var real = x_min
+				for (let j = 1; j <= x_dim; j++) {
+						var escape_time = calculate_julia_escape_time([real, imaginary], iteration_depth, mandelbrot_altorhthm, julia_value)
+						// if fully escape
+						if(escape_time == Infinity) {
+							update_pixel(end_rgba, j, i)
+						}
+						// if partially escape
+						else {
+							update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_altorithm_name), j, i)
+						}
+					real = real + x_step
 				}
-				// if partially escape
-				else {
-					update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_altorithm_name), j, i)
-				}
-			real = real + x_step
+				imaginary = imaginary - y_step
+				console.log("progress: " + Math.round(100 * (i / y_dim)) + "%")
+			}
+	}
+	else {
+		// iterate by rows
+		var imaginary = y_max
+		for (let i = 1; i <= y_dim; i++) {
+			var real = x_min
+			for (let j = 1; j <= x_dim; j++) {
+					var escape_time = calculate_escape_time([real, imaginary], iteration_depth, mandelbrot_altorhthm)
+					// if fully escape
+					if(escape_time == Infinity) {
+						update_pixel(end_rgba, j, i)
+					}
+					// if partially escape
+					else {
+						update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_altorithm_name), j, i)
+					}
+				real = real + x_step
+			}
+			imaginary = imaginary - y_step
+			console.log("progress: " + Math.round(100 * (i / y_dim)) + "%")
 		}
-		imaginary = imaginary - y_step
-		console.log("row " + i + " of " + y_dim)
 	}
 }
 
@@ -122,7 +165,7 @@ function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, begin_rgba,
 
 // Render button
 function render_trigger() {
-	render_fractal(x_min, x_max, y_min, y_max, 1000, [143,255,255,255], [0,153,0,255],"sqrt")
+	render_fractal(x_min, x_max, y_min, y_max, 100, true, [255,255,255,255], [0,0,0,255], "sqrt", [0.285,0.01])
 }
 
 // =================================
@@ -135,3 +178,7 @@ var x_min = -2
 var x_max = 2
 var y_min = -2
 var y_max = 2
+
+
+console.log(calculate_julia_escape_time([1, 1], 100, mandelbrot_altorhthm))
+console.log(calculate_escape_time([0.9, 0.1], 100, mandelbrot_altorhthm))
