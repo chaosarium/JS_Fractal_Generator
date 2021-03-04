@@ -12,15 +12,6 @@ function complex_addition(complex1, complex2) {
 	return [complex1[0] + complex2[0], complex1[1] + complex2[1]]
 }
 
-// returns the value after one iteration given complex number z and c
-function mandelbrot_altorhthm(z, c) {
-	return complex_addition(complex_product(z, z), c)
-}
-
-function square_mandelbrot_altorhthm(z, c) {
-	return complex_addition(complex_product(complex_product(z, z), z), c)
-}
-
 // returns the magnitude of complex number c
 function complex_magnitude_squared(c) {
 	return c[0] * c[0] + c[1] * c[1]
@@ -57,11 +48,20 @@ function calculate_julia_escape_time(c, iteration_depth, formula, julia_value) {
 	}
 }
 
-colouring_altorithms = {
-	"linear": function(x){return x},
-	"square": function(x){return x*x},
-	"sqrt": function(x){return Math.sqrt(x)},
-	"log": function(x){return Math.log(x)},
+// =================================
+// ------Fractal Algorithms---------
+// =================================
+
+function mandelbrot_altorhthm(z, c) {
+	return complex_addition(complex_product(z, z), c)
+}
+
+function square_mandelbrot_altorhthm(z, c) {
+	return complex_addition(complex_product(complex_product(z, z), z), c)
+}
+
+function newton_altorhthm(z, c) {
+	return complex_addition(complex_product(complex_product(z, z), z), c)
 }
 
 // =================================
@@ -85,6 +85,14 @@ function update_pixel([r, g, b, l], x, y) {
 	main_canvas.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray([r, g, b, l]), 1, 1), x, y)
 }
 
+// Colouring algorithms
+colouring_altorithms = {
+	"linear": function(x){return x},
+	"square": function(x){return x*x},
+	"sqrt": function(x){return Math.sqrt(x)},
+	"log": function(x){return Math.log(x)},
+}
+
 // colour ramp
 function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_altorithm_name) {
 	percentile = colouring_altorithms[colouring_altorithm_name](escape_time) / colouring_altorithms[colouring_altorithm_name](max_depth);
@@ -98,8 +106,8 @@ function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_alto
 }
 
 // render fractal image according on canvas according to parameters
-function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, julia_mode, begin_rgba, end_rgba, colouring_altorithm_name, julia_value = [0, 0]) {
-	// process rendering parameters
+function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, fractal_algorithm, julia_mode, begin_rgba, end_rgba, colouring_altorithm_name, julia_value = [0, 0]) {
+	// process rendering parameters to calculate scaled dimensions according to cangas size
 	var x_dim = canvas_width
 	var y_dim = canvas_height
 	var x_step = (x_max - x_min) / x_dim
@@ -121,7 +129,7 @@ function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, julia_mode,
 			for (let i = 1; i <= y_dim; i++) {
 				var real = x_min
 				for (let j = 1; j <= x_dim; j++) {
-						var escape_time = calculate_julia_escape_time([real, imaginary], iteration_depth, mandelbrot_altorhthm, julia_value)
+						var escape_time = calculate_julia_escape_time([real, imaginary], iteration_depth, fractal_algorithm, julia_value)
 						// if fully escape
 						if(escape_time == Infinity) {
 							update_pixel(end_rgba, j, i)
@@ -142,7 +150,7 @@ function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, julia_mode,
 		for (let i = 1; i <= y_dim; i++) {
 			var real = x_min
 			for (let j = 1; j <= x_dim; j++) {
-					var escape_time = calculate_escape_time([real, imaginary], iteration_depth, mandelbrot_altorhthm)
+					var escape_time = calculate_escape_time([real, imaginary], iteration_depth, fractal_algorithm)
 					// if fully escape
 					if(escape_time == Infinity) {
 						update_pixel(end_rgba, j, i)
@@ -165,7 +173,7 @@ function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, julia_mode,
 
 // Render button
 function render_trigger() {
-	render_fractal(x_min, x_max, y_min, y_max, 100, true, [255,255,255,255], [0,0,0,255], "sqrt", [0.285,0.01])
+	render_fractal(x_min, x_max, y_min, y_max, 100, mandelbrot_altorhthm, true, [255,255,255,255], [0,0,0,255], "sqrt", [-0.14,0.7])
 }
 
 // =================================
