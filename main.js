@@ -117,33 +117,21 @@ function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_algo
 // render fractal image according on canvas according to parameters
 function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, fractal_algorithm, julia_mode, begin_rgba, end_rgba, colouring_algorithm_name, julia_value = [0, 0]) {
 	// process rendering parameters to calculate scaled dimensions according to cangas size
-	var x_dim = canvas_width
-	var y_dim = canvas_height
 	var x_min = x_centre - zoom_level
 	var x_max = x_centre + zoom_level
 	var y_min = y_centre - zoom_level
 	var y_max = y_centre + zoom_level
 	// calculate step size
-	var x_step = (x_max - x_min) / x_dim
-	var y_step = (y_max - y_min) / y_dim
+	var x_step = (x_max - x_min) / canvas_width
+	var y_step = (y_max - y_min) / canvas_height
 	// logging
-	console.log("Start rendering")
-	console.log("x_min: " + x_min)
-	console.log("x_max: " + x_max)
-	console.log("y_min: " + y_min)
-	console.log("y_max: " + y_max)
-	console.log("x_dim: " + x_dim)
-	console.log("y_dim: " + y_dim)
-	console.log("x_step: " + x_step)
-	console.log("y_step: " + y_step)
-	console.log("julia enabled: " + julia_mode)
 	if(julia_mode) {
 		// iterate by rows
 		var imaginary = y_max
-		for (let i = 1; i <= y_dim; i++) {
+		for (let i = 1; i <= canvas_height; i++) {
 			setTimeout(() => {
 				var real = x_min
-				for (let j = 1; j <= x_dim; j++) {
+				for (let j = 1; j <= canvas_width; j++) {
 						var escape_time = calculate_julia_escape_time([real, imaginary], iteration_depth, fractal_algorithm, julia_value)
 						// if fully escape
 						if(escape_time == Infinity) {
@@ -156,18 +144,18 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, fractal
 					real = real + x_step
 				}
 				imaginary = imaginary - y_step
-				console.log("progress: " + Math.round(100 * (i / y_dim)) + "%")
-				update_status("calculating julia... progress: " + Math.round(100 * (i / y_dim)) + "%")
+				console.log("progress: " + Math.round(100 * (i / canvas_height)) + "%")
+				update_status("calculating julia... progress: " + Math.round(100 * (i / canvas_height)) + "%")
 			}, 1);
 		}
 	}
 	else {
 		// iterate by rows
 		var imaginary = y_max
-		for (let i = 1; i <= y_dim; i++) {
+		for (let i = 1; i <= canvas_height; i++) {
 			setTimeout(() => {
 				var real = x_min
-				for (let j = 1; j <= x_dim; j++) {
+				for (let j = 1; j <= canvas_width; j++) {
 						var escape_time = calculate_escape_time([real, imaginary], iteration_depth, fractal_algorithm)
 						// if fully escape
 						if(escape_time == Infinity) {
@@ -180,7 +168,7 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, fractal
 					real = real + x_step
 				}
 				imaginary = imaginary - y_step
-				console.log("progress: " + Math.round(100 * (i / y_dim)) + "%")
+				console.log("progress: " + Math.round(100 * (i / canvas_height)) + "%")
 				update_status("calculating...")
 			}, 1);
 		}
