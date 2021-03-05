@@ -17,12 +17,12 @@ function complex_magnitude_squared(c) {
 	return c[0] * c[0] + c[1] * c[1]
 }
 
-// function to return number of iterations processed before the magnitude of f(z) escapes given c value, 
+// function to return number of iterations processed before the magnitude of f(z) escapes given c value and that z initial = 0, 
 function calculate_escape_time(c, iteration_depth, formula) {
 	var z = [0, 0]
 	var i = 1
 	while (i <= iteration_depth && complex_magnitude_squared(z) < 4) {
-		z = formula(z, c)
+		z = fractal_algorithms[formula](z, c)
 		i++
 	}
 	if (i > iteration_depth) {
@@ -33,11 +33,12 @@ function calculate_escape_time(c, iteration_depth, formula) {
 	}
 }
 
+// function to return number of iterations processed before the magnitude of f(z) escapes given c value and that z initial = c, 
 function calculate_julia_escape_time(c, iteration_depth, formula, julia_value) {
 	var z = c
 	var i = 1
 	while (i <= iteration_depth && complex_magnitude_squared(z) < 4) {
-		z = formula(z, julia_value)
+		z = fractal_algorithms[formula](z, julia_value)
 		i++
 	}
 	if (i > iteration_depth) {
@@ -52,16 +53,12 @@ function calculate_julia_escape_time(c, iteration_depth, formula, julia_value) {
 // ------Fractal Algorithms---------
 // =================================
 
-function mandelbrot_altorhthm(z, c) {
-	return complex_addition(complex_product(z, z), c)
-}
+var fractal_algorithms = {
+	mandelbrot_algorhthm: function(z, c) {return complex_addition(complex_product(z, z), c)},
 
-function square_mandelbrot_altorhthm(z, c) {
-	return complex_addition(complex_product(complex_product(z, z), z), c)
-}
+	square_mandelbrot_altorhthm: function(z, c) {return complex_addition(complex_product(complex_product(z, z), z), c)},
 
-function newton_altorhthm(z, c) {
-	return complex_addition(complex_product(complex_product(z, z), z), c)
+	newton_altorhthm: function(z, c) {return complex_addition(complex_product(complex_product(z, z), z), c)}
 }
 
 // =================================
@@ -86,7 +83,7 @@ function update_pixel([r, g, b, l], x, y) {
 }
 
 // Colouring algorithms
-colouring_altorithms = {
+colouring_algorithms = {
 	"linear": function(x){return x},
 	"square": function(x){return x*x},
 	"sqrt": function(x){return Math.sqrt(x)},
@@ -94,8 +91,8 @@ colouring_altorithms = {
 }
 
 // colour ramp
-function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_altorithm_name) {
-	percentile = colouring_altorithms[colouring_altorithm_name](escape_time) / colouring_altorithms[colouring_altorithm_name](max_depth);
+function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_algorithm_name) {
+	percentile = colouring_algorithms[colouring_algorithm_name](escape_time) / colouring_algorithms[colouring_algorithm_name](max_depth);
 	resultant_rgba = [
 		Math.round(begin_rgba[0] + ((end_rgba[0] - begin_rgba[0]) * percentile)),
 		Math.round(begin_rgba[2] + ((end_rgba[2] - begin_rgba[2]) * percentile)),
@@ -106,10 +103,15 @@ function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_alto
 }
 
 // render fractal image according on canvas according to parameters
-function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, fractal_algorithm, julia_mode, begin_rgba, end_rgba, colouring_altorithm_name, julia_value = [0, 0]) {
+function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, fractal_algorithm, julia_mode, begin_rgba, end_rgba, colouring_algorithm_name, julia_value = [0, 0]) {
 	// process rendering parameters to calculate scaled dimensions according to cangas size
 	var x_dim = canvas_width
 	var y_dim = canvas_height
+	var x_min = x_centre - zoom_level
+	var x_max = x_centre + zoom_level
+	var y_min = y_centre - zoom_level
+	var y_max = y_centre + zoom_level
+	// calculate step size
 	var x_step = (x_max - x_min) / x_dim
 	var y_step = (y_max - y_min) / y_dim
 	// logging
@@ -122,8 +124,8 @@ function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, fractal_alg
 	console.log("y_dim: " + y_dim)
 	console.log("x_step: " + x_step)
 	console.log("y_step: " + y_step)
+	console.log("julia enabled: " + julia_mode)
 	if(julia_mode) {
-		console.log("julia enabled")
 			// iterate by rows
 			var imaginary = y_max
 			for (let i = 1; i <= y_dim; i++) {
@@ -136,7 +138,7 @@ function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, fractal_alg
 						}
 						// if partially escape
 						else {
-							update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_altorithm_name), j, i)
+							update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_algorithm_name), j, i)
 						}
 					real = real + x_step
 				}
@@ -157,7 +159,7 @@ function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, fractal_alg
 					}
 					// if partially escape
 					else {
-						update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_altorithm_name), j, i)
+						update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_algorithm_name), j, i)
 					}
 				real = real + x_step
 			}
@@ -173,7 +175,7 @@ function render_fractal(x_min, x_max, y_min, y_max, iteration_depth, fractal_alg
 
 // Render button
 function render_trigger() {
-	render_fractal(x_min, x_max, y_min, y_max, 100, mandelbrot_altorhthm, true, [255,255,255,255], [0,0,0,255], "sqrt", [-0.14,0.7])
+	render_fractal(x_centre, y_centre, zoom_level, 100, "mandelbrot_algorhthm", true, [255,255,255,255], [0,0,0,255], "sqrt", [-0.14,0.7])
 }
 
 // =================================
@@ -182,11 +184,10 @@ function render_trigger() {
 
 update_pixel([155, 155, 155, 155], 12, 12)
 
-var x_min = -2
-var x_max = 2
-var y_min = -2
-var y_max = 2
+var x_centre = 0
+var y_centre = 0
+var zoom_level = 2
 
 
-console.log(calculate_julia_escape_time([1, 1], 100, mandelbrot_altorhthm))
-console.log(calculate_escape_time([0.9, 0.1], 100, mandelbrot_altorhthm))
+// console.log(calculate_julia_escape_time([1, 1], 100, mandelbrot_altorhthm))
+// console.log(calculate_escape_time([0.9, 0.1], 100, mandelbrot_altorhthm))
