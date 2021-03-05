@@ -124,54 +124,32 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, fractal
 	// calculate step size
 	var x_step = (x_max - x_min) / canvas_width
 	var y_step = (y_max - y_min) / canvas_height
-	// logging
-	if(julia_mode) {
-		// iterate by rows
-		var imaginary = y_max
-		for (let i = 1; i <= canvas_height; i++) {
-			setTimeout(() => {
-				var real = x_min
-				for (let j = 1; j <= canvas_width; j++) {
-						var escape_time = calculate_julia_escape_time([real, imaginary], iteration_depth, fractal_algorithm, julia_value)
-						// if fully escape
-						if(escape_time == Infinity) {
-							update_pixel(end_rgba, j, i)
-						}
-						// if partially escape
-						else {
-							update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_algorithm_name), j, i)
-						}
-					real = real + x_step
+	// iterate by rows
+	var imaginary = y_max
+	for (let i = 1; i <= canvas_height; i++) {
+		setTimeout(() => {
+			var real = x_min
+			for (let j = 1; j <= canvas_width; j++) {
+				if(julia_mode) {
+					var escape_time = calculate_julia_escape_time([real, imaginary], iteration_depth, fractal_algorithm, julia_value)
 				}
-				imaginary = imaginary - y_step
-				console.log("progress: " + Math.round(100 * (i / canvas_height)) + "%")
-				update_status("calculating julia... progress: " + Math.round(100 * (i / canvas_height)) + "%")
-			}, 1);
-		}
-	}
-	else {
-		// iterate by rows
-		var imaginary = y_max
-		for (let i = 1; i <= canvas_height; i++) {
-			setTimeout(() => {
-				var real = x_min
-				for (let j = 1; j <= canvas_width; j++) {
-						var escape_time = calculate_escape_time([real, imaginary], iteration_depth, fractal_algorithm)
-						// if fully escape
-						if(escape_time == Infinity) {
-							update_pixel(end_rgba, j, i)
-						}
-						// if partially escape
-						else {
-							update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_algorithm_name), j, i)
-						}
-					real = real + x_step
+				else {
+					var escape_time = calculate_escape_time([real, imaginary], iteration_depth, fractal_algorithm)
 				}
-				imaginary = imaginary - y_step
-				console.log("progress: " + Math.round(100 * (i / canvas_height)) + "%")
-				update_status("calculating...")
-			}, 1);
-		}
+				// if fully escape
+				if(escape_time == Infinity) {
+					update_pixel(end_rgba, j, i)
+				}
+				// if partially escape
+				else {
+					update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_algorithm_name), j, i)
+				}
+				real = real + x_step
+			}
+			imaginary = imaginary - y_step
+			console.log("progress: " + Math.round(100 * (i / canvas_height)) + "%")
+			update_status("still calculating... progress: " + Math.round(100 * (i / canvas_height)) + "%")
+		}, 1);
 	}
 }
 
@@ -183,7 +161,7 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, fractal
 function render_trigger() {
 	update_status("starting calculation... (this will take a while)")
 	setTimeout(() => {
-		render_fractal(x_centre, y_centre, zoom_level, 100, "mandelbrot_algorhthm", true, [255,255,255,255], [0,0,0,255], "sqrt", [-0.14,0.7])
+		render_fractal(x_centre, y_centre, zoom_level, 100, "mandelbrot_algorhthm", false, [255,255,255,255], [0,0,0,255], "sqrt", [-0.14,0.7])
 	}, 10);
 }
 
