@@ -12,6 +12,11 @@ function complex_addition(complex1, complex2) {
 	return [complex1[0] + complex2[0], complex1[1] + complex2[1]]
 }
 
+// returns the reciprocal of a complex numbers
+function complex_reciprocal(complex) {
+	return [complex[0] / ((complex[0] * complex[0]) + (complex[1] * complex[1])), (0 - complex[1]) / ((complex[0] * complex[0]) + (complex[1] * complex[1]))]
+}
+
 // returns the magnitude of complex number c
 function complex_magnitude_squared(c) {
 	return c[0] * c[0] + c[1] * c[1]
@@ -56,9 +61,13 @@ function calculate_julia_escape_time(c, iteration_depth, formula, julia_value) {
 var fractal_algorithms = {
 	mandelbrot_algorhthm: function(z, c) {return complex_addition(complex_product(z, z), c)},
 
-	square_mandelbrot_altorhthm: function(z, c) {return complex_addition(complex_product(complex_product(z, z), z), c)},
+	mandelbrot_cubed_altorhthm: function(z, c) {return complex_addition(complex_product(complex_product(z, z), z), c)},
 
-	newton_altorhthm: function(z, c) {return complex_addition(complex_product(complex_product(z, z), z), c)}
+	newton_altorhthm: function(z, c) {return complex_addition(complex_product(complex_product(z, z), z), [-1,0])},
+	
+	burning_ship_altorhthm: function(z, c) {return complex_addition(complex_product([Math.abs(z[0]), Math.abs(z[1])], [Math.abs(z[0]), Math.abs(z[1])]), c)},
+
+	magnet_altorhthm: function(z, c) {return complex_product(complex_product(complex_addition(complex_addition(complex_product(z, z), c), [-1, 0]), complex_reciprocal(complex_addition(complex_addition(complex_product([2, 0], z), c), [-2, 0]))), complex_product(complex_addition(complex_addition(complex_product(z, z), c), [-1, 0]), complex_reciprocal(complex_addition(complex_addition(complex_product([2, 0], z), c), [-2, 0]))))},
 }
 
 // =================================
@@ -77,12 +86,6 @@ var status_text = document.getElementById("status_text")
 // Function to update status text
 function update_status(message) {
 	status_text.innerHTML = message
-}
-// get control over status bar
-var progress_bar = document.getElementById("progress_bar_inside")
-// Function to update progress bar
-function update_progress_bar(value) {
-	progress_bar.style.width = value + "%"
 }
 
 // =================================
@@ -127,7 +130,7 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, fractal
 	// iterate by rows
 	var imaginary = y_max
 	for (let i = 1; i <= canvas_height; i++) {
-		setTimeout(() => {
+		setTimeout(function() {
 			var real = x_min
 			for (let j = 1; j <= canvas_width; j++) {
 				if(julia_mode) {
@@ -148,9 +151,10 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, fractal
 			}
 			imaginary = imaginary - y_step
 			console.log("progress: " + Math.round(100 * (i / canvas_height)) + "%")
-			update_status("still calculating... progress: " + Math.round(100 * (i / canvas_height)) + "%")
+			update_status("Calculation progress: " + Math.round(100 * (i / canvas_height)) + "%")
 		}, 1);
 	}
+	update_status("Done")
 }
 
 // =================================
@@ -159,10 +163,7 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, fractal
 
 // Render button
 function render_trigger() {
-	update_status("starting calculation... (this will take a while)")
-	setTimeout(() => {
-		render_fractal(x_centre, y_centre, zoom_level, 100, "mandelbrot_algorhthm", false, [255,255,255,255], [0,0,0,255], "sqrt", [-0.14,0.7])
-	}, 10);
+	render_fractal(x_centre, y_centre, zoom_level, 400, "magnet_altorhthm", false, [255,255,255,255], [0,0,0,255], "sqrt", [-0.14,0.7])
 }
 
 // =================================
@@ -173,7 +174,7 @@ update_pixel([155, 155, 155, 155], 12, 12)
 
 var x_centre = 0
 var y_centre = 0
-var zoom_level = 2
+var zoom_level = 4
 
 
 // console.log(calculate_julia_escape_time([1, 1], 100, mandelbrot_altorhthm))
