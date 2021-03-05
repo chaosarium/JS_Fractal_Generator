@@ -23,10 +23,10 @@ function complex_magnitude_squared(c) {
 }
 
 // function to return number of iterations processed before the magnitude of f(z) escapes given c value and that z initial = 0, 
-function calculate_escape_time(c, iteration_depth, formula) {
+function calculate_escape_time(c, iteration_depth, bailout, formula) {
 	var z = [0, 0]
 	var i = 1
-	while (i <= iteration_depth && complex_magnitude_squared(z) < 4) {
+	while (i <= iteration_depth && complex_magnitude_squared(z) < bailout) {
 		z = fractal_algorithms[formula](z, c)
 		i++
 	}
@@ -39,10 +39,10 @@ function calculate_escape_time(c, iteration_depth, formula) {
 }
 
 // function to return number of iterations processed before the magnitude of f(z) escapes given c value and that z initial = c, 
-function calculate_julia_escape_time(c, iteration_depth, formula, julia_value) {
+function calculate_julia_escape_time(c, iteration_depth, bailout, formula, julia_value) {
 	var z = c
 	var i = 1
-	while (i <= iteration_depth && complex_magnitude_squared(z) < 4) {
+	while (i <= iteration_depth && complex_magnitude_squared(z) < bailout) {
 		z = fractal_algorithms[formula](z, julia_value)
 		i++
 	}
@@ -118,7 +118,7 @@ function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_algo
 }
 
 // render fractal image according on canvas according to parameters
-function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, fractal_algorithm, julia_mode, begin_rgba, end_rgba, colouring_algorithm_name, julia_value = [0, 0]) {
+function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, bailout, fractal_algorithm, julia_mode, begin_rgba, end_rgba, colouring_algorithm_name, julia_value = [0, 0]) {
 	// process rendering parameters to calculate scaled dimensions according to cangas size
 	var x_min = x_centre - zoom_level
 	var x_max = x_centre + zoom_level
@@ -134,10 +134,10 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, fractal
 			var real = x_min
 			for (let j = 1; j <= canvas_width; j++) {
 				if(julia_mode) {
-					var escape_time = calculate_julia_escape_time([real, imaginary], iteration_depth, fractal_algorithm, julia_value)
+					var escape_time = calculate_julia_escape_time([real, imaginary], iteration_depth, bailout, fractal_algorithm, julia_value)
 				}
 				else {
-					var escape_time = calculate_escape_time([real, imaginary], iteration_depth, fractal_algorithm)
+					var escape_time = calculate_escape_time([real, imaginary], iteration_depth, bailout,  fractal_algorithm)
 				}
 				// if fully escape
 				if(escape_time == Infinity) {
@@ -163,7 +163,7 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, fractal
 
 // Render button
 function render_trigger() {
-	render_fractal(x_centre, y_centre, zoom_level, 400, "magnet_altorhthm", false, [255,255,255,255], [0,0,0,255], "sqrt", [-0.14,0.7])
+	render_fractal(x_centre, y_centre, zoom_level, 400, 4, "mandelbrot_algorhthm", false, [255,255,255,255], [0,0,0,255], "sqrt", [-0.14,0.7])
 }
 
 // =================================
@@ -174,7 +174,7 @@ update_pixel([155, 155, 155, 155], 12, 12)
 
 var x_centre = 0
 var y_centre = 0
-var zoom_level = 4
+var zoom_level = 2
 
 
 // console.log(calculate_julia_escape_time([1, 1], 100, mandelbrot_altorhthm))
