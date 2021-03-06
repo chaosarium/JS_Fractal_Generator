@@ -4,77 +4,133 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fractal Gen JS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
   <style>
     canvas {
-      border: solid red 1px;
+      border: solid grey 1px;
+    }
+    .input-group-text {
+      padding: .1rem .5rem !important;
+    }
+    .input-group {
+      margin-bottom: 0.5rem !important;
+    }
+    .form-control:focus {
+      border-color: #777777;
+      box-shadow: 0 0 0 .15rem rgba(44, 44, 44, 0.25);
     }
   </style>
 </head>
 <body>
-  <h1>Fractal Gen JS</h1>
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Fractal Gen JS</a>
+    </div>
+  </nav>
+  <div class="container-fluid py-3 px-lg-5">
+    <div class="row">
+      <div class="col-6">
+        <h2>Rendering parameters</h2>
+        <form>
 
-  <h2>Rendering parameters</h2>
-    
-    <label for="x_centre">x-coordinate</label>
-    <input type="number" step="0.01" id="x_centre" value="0"
-    >
-    <br>
+          <label class="visually-hidden" for="fractal_algorithm"></label>
+          <div class="input-group">
+            <div class="input-group-text">Algorithm</div>
+            <select class="form-select" id="fractal_algorithm">
+              <option value="mandelbrot_algorhthm">Mandelbrot</option>
+              <option value="mandelbrot_cubed_altorhthm">Mandelbrot^3</option>
+              <option value="newton_altorhthm">Newton</option>
+              <option value="burning_ship_altorhthm">Burning Ship</option>
+              <option value="magnet_altorhthm">Magnet</option>
+              <option value="suspicious_mandelbrot_altorhthm">Suspicious Mandelbrot</option>
+            </select>
+          </div>
 
-    <label for="y_centre">y-coordinate</label>
-    <input type="number" step="0.01" id="y_centre" value="0">
-    <br>
+          <label class="visually-hidden" for="x_centre"></label>
+          <div class="input-group">
+            <div class="input-group-text">X Position</div>
+            <input type="number" class="form-control" step="0.01" id="x_centre" value="0">
+          </div>
 
-    <label for="zoom_level">Zoom Level</label>
-    <input type="number" step="0.01" id="zoom_level" value="0.5">
-    <br>
+          <label class="visually-hidden" for="y_centre"></label>
+          <div class="input-group">
+            <div class="input-group-text">Y Position</div>
+            <input type="number" class="form-control" step="0.01" id="y_centre" value="0">
+          </div>
 
-    <label for="iteration_depth">Iteration Depth</label>
-    <input type="number" step="1" id="iteration_depth" value="100">
-    <br>
+          <label class="visually-hidden" for="zoom_level"></label>
+          <div class="input-group">
+            <div class="input-group-text">Zoom Level</div>
+            <input type="number" class="form-control" step="0.01" id="zoom_level" value="0.5">
+          </div>
 
-    <label for="bailout">Bailout</label>
-    <input type="number" step="0.01" id="bailout" value="4">
-    <br>
+          <label class="visually-hidden" for="iteration_depth"></label>
+          <div class="input-group">
+            <div class="input-group-text">Iteration Depth</div>
+            <input type="number" class="form-control" step="1" id="iteration_depth" value="100">
+          </div>
 
-    <label for="fractal_algorithm">Formula</label>
-    <select id="fractal_algorithm">
-      <option value="mandelbrot_algorhthm">Mandelbrot</option>
-      <option value="mandelbrot_cubed_altorhthm">Mandelbrot^3</option>
-      <option value="newton_altorhthm">Newton</option>
-      <option value="burning_ship_altorhthm">Burning Ship</option>
-      <option value="magnet_altorhthm">Magnet</option>
-      <option value="suspicious_mandelbrot_altorhthm">Suspicious Mandelbrot</option>
-    </select>
-    <br>
+          <label class="visually-hidden" for="bailout"></label>
+          <div class="input-group">
+            <div class="input-group-text">Bailout</div>
+            <input type="number" class="form-control" step="0.01" id="bailout" value="4">
+          </div>
 
-    <label for="colouring_algorithm">Colouring Algorithm</label>
-    <select id="colouring_algorithm">
-      <option value="linear">Linear</option>
-      <option value="square">Square</option>
-      <option value="sqrt">Square root</option>
-      <option value="log">Logarithmic</option>
-    </select>
-    <br>
+          <label class="visually-hidden" for="mode"></label>
+          <div class="input-group">
+            <div class="input-group-text">Mode</div>
+            <select class="form-select" id="mode">
+              <option value="normal_mode">Normal</option>
+              <option value="julia_mode">Julia</option>
+            </select>
+          </div>
 
-    <label for="julia_mode">Enable Julia Set</label>
-    <input type="checkbox" id="julia_mode">
-    <br>
+          <label class="visually-hidden" for="colouring_algorithm"></label>
+          <div class="input-group">
+            <div class="input-group-text">Colouring Algorithm</div>
+            <select class="form-select" id="colouring_algorithm">
+              <option value="linear">Linear</option>
+              <option value="square">Square</option>
+              <option value="sqrt">Square Root</option>
+              <option value="log">Logarithmic</option>
+            </select>
+          </div>
 
-    <label for="julia_real">Julia Seed Real</label>
-    <input type="number" step="0.01" id="julia_real" value="0">
-    <br>
+          <label class="visually-hidden" for="colour_ramp"></label>
+          <div class="input-group">
+            <div class="input-group-text">Colour Ramp</div>
+            <select class="form-select" id="colour_ramp">
+              <option value="greyscale">Greyscale</option>
+              <option value="inverted_greyscale">Inverted Greyscale</option>
+              <option value="ocean">Ocean</option>
+              <option value="flame">Flame</option>
+              <option value="life">Life</option>
+            </select>
+          </div>
 
-    <label for="julia_imaginary">Julia Seed Imaginary</label>
-    <input type="number" step="0.01" id="julia_imaginary" value="0">
-    <br>
+          <label class="visually-hidden" for="julia_real"></label>
+          <div class="input-group">
+            <div class="input-group-text">Julia Seed Real</div>
+            <input type="number" class="form-control" step="0.01" id="julia_real" value="0">
+          </div>
 
-  <hr>
+          <label class="visually-hidden" for="julia_imaginary"></label>
+          <div class="input-group">
+            <div class="input-group-text">Julia Seed Imaginary</div>
+            <input type="number" class="form-control" step="0.01" id="julia_imaginary" value="0">
+          </div>
 
-  <h2>Result</h2>
-    <p id="status_text">Everything ready. Click the "Calculate" button to render</p>
+          <button onclick="render_trigger()" type="button" class="btn btn-outline-secondary">Render</button>
+        </form>
+      </div>
+      <div class="col-6">
+        <h2>Result</h2>
+          <p id="status_text">Everything ready. Click the "Render" button to render</p>
+          <canvas id="fractal_viewport" width="600" height="600"></canvas>
+      </div>
+    </div>
+  </div>
 
-    <canvas id="fractal_viewport" width="600" height="600"></canvas>
-    <button onclick="render_trigger()">Calculate</button>
 
 
 </body>

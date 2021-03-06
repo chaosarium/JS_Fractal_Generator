@@ -103,6 +103,14 @@ colouring_algorithms = {
 }
 
 // colour ramp
+var colour_presets = {
+	"greyscale": [[255,255,255,255], [0,0,0,255]],
+	"inverted_greyscale": [[0,0,0,255], [255,255,255,255]],
+	"ocean": [[137, 196, 214,255], [64, 108, 219,255]],
+	"flame": [[227, 8, 0,255],[245, 215, 44,255]],
+	"life": [[0,0,0,255], [255,255,255,255]],
+}
+
 function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_algorithm_name) {
 	percentile = colouring_algorithms[colouring_algorithm_name](escape_time) / colouring_algorithms[colouring_algorithm_name](max_depth);
 	resultant_rgba = [
@@ -168,11 +176,12 @@ function render_trigger() {
 	user_bailout = parseFloat(document.getElementById("bailout").value)
 	user_fractal_algorithm = document.getElementById("fractal_algorithm").value
 	user_colouring_algorithm = document.getElementById("colouring_algorithm").value
-	user_julia_mode = document.getElementById("julia_mode").checked
+	user_colour_ramp = document.getElementById("colour_ramp").value
+	user_julia_mode = (document.getElementById("mode").value == "julia_mode")
 	user_julia_coordinate = [parseFloat(document.getElementById("julia_real").value), parseFloat(document.getElementById("julia_imaginary").value)]
 	console.log(user_julia_coordinate)
 	// render based on user parameters
-	render_fractal(user_x_centre, user_y_centre, user_zoom_level, user_iteration_depth, user_bailout, user_fractal_algorithm, user_julia_mode, [255,255,255,255], [0,0,0,255], user_colouring_algorithm, user_julia_coordinate)
+	render_fractal(user_x_centre, user_y_centre, user_zoom_level, user_iteration_depth, user_bailout, user_fractal_algorithm, user_julia_mode, colour_presets[user_colour_ramp][0], colour_presets[user_colour_ramp][1], user_colouring_algorithm, user_julia_coordinate)
 }
 
 // =================================
