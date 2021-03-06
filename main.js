@@ -59,15 +59,12 @@ function calculate_julia_escape_time(c, iteration_depth, bailout, formula, julia
 // =================================
 
 var fractal_algorithms = {
-	mandelbrot_algorhthm: function(z, c) {return complex_addition(complex_product(z, z), c)},
-
-	mandelbrot_cubed_altorhthm: function(z, c) {return complex_addition(complex_product(complex_product(z, z), z), c)},
-
-	newton_altorhthm: function(z, c) {return complex_addition(complex_product(complex_product(z, z), z), [-1,0])},
-	
-	burning_ship_altorhthm: function(z, c) {return complex_addition(complex_product([Math.abs(z[0]), Math.abs(z[1])], [Math.abs(z[0]), Math.abs(z[1])]), c)},
-
-	magnet_altorhthm: function(z, c) {return complex_product(complex_product(complex_addition(complex_addition(complex_product(z, z), c), [-1, 0]), complex_reciprocal(complex_addition(complex_addition(complex_product([2, 0], z), c), [-2, 0]))), complex_product(complex_addition(complex_addition(complex_product(z, z), c), [-1, 0]), complex_reciprocal(complex_addition(complex_addition(complex_product([2, 0], z), c), [-2, 0]))))},
+	"mandelbrot_algorhthm": function(z, c) {return complex_addition(complex_product(z, z), c)},
+	"mandelbrot_cubed_altorhthm": function(z, c) {return complex_addition(complex_product(complex_product(z, z), z), c)},
+	"newton_altorhthm": function(z, c) {return complex_addition(complex_product(complex_product(z, z), z), [-1,0])},
+	"burning_ship_altorhthm": function(z, c) {return complex_addition(complex_product([Math.abs(z[0]), Math.abs(z[1])], [Math.abs(z[0]), Math.abs(z[1])]), c)},
+	"magnet_altorhthm": function(z, c) {return complex_product(complex_product(complex_addition(complex_addition(complex_product(z, z), c), [-1, 0]), complex_reciprocal(complex_addition(complex_addition(complex_product([2, 0], z), c), [-2, 0]))), complex_product(complex_addition(complex_addition(complex_product(z, z), c), [-1, 0]), complex_reciprocal(complex_addition(complex_addition(complex_product([2, 0], z), c), [-2, 0]))))},
+	"suspicious_mandelbrot_altorhthm": function(z, c) {return complex_addition(complex_product(z, complex_addition(z, c)), c)},
 }
 
 // =================================
@@ -120,10 +117,10 @@ function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_algo
 // render fractal image according on canvas according to parameters
 function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, bailout, fractal_algorithm, julia_mode, begin_rgba, end_rgba, colouring_algorithm_name, julia_value = [0, 0]) {
 	// process rendering parameters to calculate scaled dimensions according to cangas size
-	var x_min = x_centre - zoom_level
-	var x_max = x_centre + zoom_level
-	var y_min = y_centre - zoom_level
-	var y_max = y_centre + zoom_level
+	var x_min = x_centre - (1 / zoom_level)
+	var x_max = x_centre + (1 / zoom_level)
+	var y_min = y_centre - (1 / zoom_level)
+	var y_max = y_centre + (1 / zoom_level)
 	// calculate step size
 	var x_step = (x_max - x_min) / canvas_width
 	var y_step = (y_max - y_min) / canvas_height
@@ -163,7 +160,19 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, bailout
 
 // Render button
 function render_trigger() {
-	render_fractal(x_centre, y_centre, zoom_level, 400, 4, "mandelbrot_algorhthm", false, [255,255,255,255], [0,0,0,255], "sqrt", [-0.14,0.7])
+	// collect user input
+	user_x_centre = parseFloat(document.getElementById("x_centre").value)
+	user_y_centre = parseFloat(document.getElementById("y_centre").value)
+	user_zoom_level = parseFloat(document.getElementById("zoom_level").value)
+	user_iteration_depth = Math.round(document.getElementById("iteration_depth").value)
+	user_bailout = parseFloat(document.getElementById("bailout").value)
+	user_fractal_algorithm = document.getElementById("fractal_algorithm").value
+	user_colouring_algorithm = document.getElementById("colouring_algorithm").value
+	user_julia_mode = document.getElementById("julia_mode").checked
+	user_julia_coordinate = [parseFloat(document.getElementById("julia_real").value), parseFloat(document.getElementById("julia_imaginary").value)]
+	console.log(user_julia_coordinate)
+	// render based on user parameters
+	render_fractal(user_x_centre, user_y_centre, user_zoom_level, user_iteration_depth, user_bailout, user_fractal_algorithm, user_julia_mode, [255,255,255,255], [0,0,0,255], user_colouring_algorithm, user_julia_coordinate)
 }
 
 // =================================
@@ -172,9 +181,9 @@ function render_trigger() {
 
 update_pixel([155, 155, 155, 155], 12, 12)
 
-var x_centre = 0
+var x_centre = 0.3
 var y_centre = 0
-var zoom_level = 2
+var zoom_level = 4
 
 
 // console.log(calculate_julia_escape_time([1, 1], 100, mandelbrot_altorhthm))

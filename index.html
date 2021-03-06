@@ -11,37 +11,62 @@
   </style>
 </head>
 <body>
-  <h1>Mandelbrot Set Renderer in Javascript</h1>
-  <h2>About the mandelbrot Set</h2>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae error similique temporibus possimus porro voluptatibus laudantium unde aliquam nam optio!</p>
-    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Inventore, omnis incidunt! Ex libero, magnam minus veritatis illo voluptas quia architecto?</p>
-  <h2>Instructions</h2>
-    <ol>
-      <li>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nulla, ratione?</li>
-      <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet, deleniti!</li>
-      <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut, aspernatur.</li>
-    </ol>
-  <h2>How it works</h2>
-    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nulla cum excepturi aliquid numquam nihil obcaecati nostrum, ipsa fugiat quam quia voluptatum nesciunt facilis eos, atque vel commodi consequuntur sit praesentium.</p>
-
+  <h1>Fractal Gen JS</h1>
 
   <h2>Rendering parameters</h2>
     
+    <label for="x_centre">x-coordinate</label>
+    <input type="number" step="0.01" id="x_centre" value="0"
+    >
+    <br>
 
-    <label for="iteration_depth">Iteration Depth</label>
-    <input type="number" id="iteration_depth">
-
-    <label for="x_coordinate">x-coordinate</label>
-    <input type="number" id="x_coordinate">
-
-    <label for="y_coordinate">y-coordinate</label>
-    <input type="number" id="y_coordinate">
+    <label for="y_centre">y-coordinate</label>
+    <input type="number" step="0.01" id="y_centre" value="0">
+    <br>
 
     <label for="zoom_level">Zoom Level</label>
-    <input type="number" id="zoom_level">
+    <input type="number" step="0.01" id="zoom_level" value="0.5">
+    <br>
 
-    <label for="julia_tggle">Julia Set</label>
-    <input type="checkbox" id="julia_tggle">
+    <label for="iteration_depth">Iteration Depth</label>
+    <input type="number" step="1" id="iteration_depth" value="100">
+    <br>
+
+    <label for="bailout">Bailout</label>
+    <input type="number" step="0.01" id="bailout" value="4">
+    <br>
+
+    <label for="fractal_algorithm">Formula</label>
+    <select id="fractal_algorithm">
+      <option value="mandelbrot_algorhthm">Mandelbrot</option>
+      <option value="mandelbrot_cubed_altorhthm">Mandelbrot^3</option>
+      <option value="newton_altorhthm">Newton</option>
+      <option value="burning_ship_altorhthm">Burning Ship</option>
+      <option value="magnet_altorhthm">Magnet</option>
+      <option value="suspicious_mandelbrot_altorhthm">Suspicious Mandelbrot</option>
+    </select>
+    <br>
+
+    <label for="colouring_algorithm">Colouring Algorithm</label>
+    <select id="colouring_algorithm">
+      <option value="linear">Linear</option>
+      <option value="square">Square</option>
+      <option value="sqrt">Square root</option>
+      <option value="log">Logarithmic</option>
+    </select>
+    <br>
+
+    <label for="julia_mode">Enable Julia Set</label>
+    <input type="checkbox" id="julia_mode">
+    <br>
+
+    <label for="julia_real">Julia Seed Real</label>
+    <input type="number" step="0.01" id="julia_real" value="0">
+    <br>
+
+    <label for="julia_imaginary">Julia Seed Imaginary</label>
+    <input type="number" step="0.01" id="julia_imaginary" value="0">
+    <br>
 
   <hr>
 
