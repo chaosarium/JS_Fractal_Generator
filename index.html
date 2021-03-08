@@ -27,13 +27,13 @@
 </head>
 <body>
   <nav class="navbar navbar-dark bg-dark">
-    <div class="container-fluid">
+    <div class="container-fluid px-lg-5">
       <a class="navbar-brand" href="#">Fractal Gen JS</a>
     </div>
   </nav>
-  <div class="container-fluid py-3 px-lg-5">
+  <div class="container-fluid py-4 px-lg-5">
     <div class="row">
-      <div class="col-6">
+      <div class="col-12 col-xl-5 col-lg-4 col-md-8">
         <h2>Rendering parameters</h2>
         <p>These parameters control how the fractal will look</p>
         <form>
@@ -128,7 +128,7 @@
           <button onclick="render_trigger()" type="button" class="btn btn-outline-secondary">Render</button>
         </form>
       </div>
-      <div class="col-6">
+      <div class="col-12 col-xl-7 col-lg-8">
         <h2>Result</h2>
           <p id="status_text">Everything ready. Click the "Render" button to render</p>
           <canvas id="fractal_viewport" width="600" height="600"></canvas>
