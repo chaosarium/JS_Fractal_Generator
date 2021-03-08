@@ -183,17 +183,3 @@ function render_trigger() {
 	// render based on user parameters
 	render_fractal(user_x_centre, user_y_centre, user_zoom_level, user_iteration_depth, user_bailout, user_fractal_algorithm, user_julia_mode, colour_presets[user_colour_ramp][0], colour_presets[user_colour_ramp][1], user_colouring_algorithm, user_julia_coordinate)
 }
-
-// =================================
-// ----------Playground-------------
-// =================================
-
-update_pixel([155, 155, 155, 155], 12, 12)
-
-var x_centre = 0.3
-var y_centre = 0
-var zoom_level = 4
-
-
-// console.log(calculate_julia_escape_time([1, 1], 100, mandelbrot_altorhthm))
-// console.log(calculate_escape_time([0.9, 0.1], 100, mandelbrot_altorhthm))
