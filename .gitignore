@@ -34,3 +34,11 @@ colormap-master/res/res/viridis.js
 colormap-master/res/res/vorticity-pink.js
 colormap-master/res/res/vorticity-turquoise.js
 colormap-master/res/res/warm.png
+javascript-color-gradient-1.3.1/.gitignore
+javascript-color-gradient-1.3.1/LICENSE
+javascript-color-gradient-1.3.1/package-lock.json
+javascript-color-gradient-1.3.1/package.json
+javascript-color-gradient-1.3.1/README.md
+javascript-color-gradient-1.3.1/webpack.config.babel.js
+javascript-color-gradient-1.3.1/src/index.js
+javascript-color-gradient-1.3.1/src/index.test.js
