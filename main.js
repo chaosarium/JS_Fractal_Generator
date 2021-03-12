@@ -104,7 +104,7 @@ colouring_algorithms = {
 
 // colour ramp
 var colour_presets = {
-	"greyscale": [[255.997, 255.998, 255.999,255], [0.0001, 0.0002, 0.0003,255]],
+	"greyscale": [[255, 255, 255,255], [0, 0, 0,255]],
 	"inverted_greyscale": [[0,0,0,255], [255,255,255,255]],
 	"violet": [[244,244,255,255], [60,0,50,255]],
 	"moss": [[255,254,253,255], [1,2,3,255]],
@@ -117,28 +117,42 @@ function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_algo
 	// Calculate escape time percentile based on colouring algorithm
 	percentile = Math.min(colouring_algorithms[colouring_algorithm_name](escape_time) / colouring_algorithms[colouring_algorithm_name](max_depth), 1);
 
-	// Convert RGB data to HSL
-	begin_hsv = Please.RGB_to_HSV({r: begin_rgba[0], g: begin_rgba[1], b: begin_rgba[2]})
-	end_hsv = Please.RGB_to_HSV({r: end_rgba[0], g: end_rgba[1], b: end_rgba[2]})
+	// Check if greyscale
+	if(begin_rgba[0] == begin_rgba[1] && begin_rgba[1] == begin_rgba[2] && end_rgba[0] == end_rgba[1] && end_rgba[1] == end_rgba[2]) {
+		console.log("greyscale")
+		resultant_rgba = [
+			Math.max(0, Math.min(begin_rgba[0] + (percentile * (end_rgba[0] - begin_rgba[0])), 255)),
+			Math.max(0, Math.min(begin_rgba[1] + (percentile * (end_rgba[1] - begin_rgba[1])), 255)),
+			Math.max(0, Math.min(begin_rgba[2] + (percentile * (end_rgba[2] - begin_rgba[2])), 255)),
+			255
+		]
+		return resultant_rgba
+	} 
+	// if colour
+	else {
+		// Convert RGB data to HSL
+		begin_hsv = Please.RGB_to_HSV({r: begin_rgba[0], g: begin_rgba[1], b: begin_rgba[2]})
+		end_hsv = Please.RGB_to_HSV({r: end_rgba[0], g: end_rgba[1], b: end_rgba[2]})
 
-	// Calculate HSL gradient
-	resultant_hsv = [
-		begin_hsv.h + ((end_hsv.h - begin_hsv.h) * percentile),
-		begin_hsv.s + ((end_hsv.s - begin_hsv.s) * percentile),
-		begin_hsv.v + ((end_hsv.v - begin_hsv.v) * percentile)
-	]
+		// Calculate HSL gradient
+		resultant_hsv = [
+			begin_hsv.h + ((end_hsv.h - begin_hsv.h) * percentile),
+			begin_hsv.s + ((end_hsv.s - begin_hsv.s) * percentile),
+			begin_hsv.v + ((end_hsv.v - begin_hsv.v) * percentile)
+		]
 
-	// Convert new colour back to RGB
-	resultant_rgb = Please.HSV_to_RGB({h: resultant_hsv[0], s: resultant_hsv[1], v: resultant_hsv[2]})
+		// Convert new colour back to RGB
+		resultant_rgb = Please.HSV_to_RGB({h: resultant_hsv[0], s: resultant_hsv[1], v: resultant_hsv[2]})
 
-	// Convert new colour to RGBA
-	resultant_rgba = [
-		Math.max(0, Math.min(resultant_rgb.r, 255)),
-		Math.max(0, Math.min(resultant_rgb.g, 255)),
-		Math.max(0, Math.min(resultant_rgb.b, 255)),
-		255
-	]
-	return resultant_rgba
+		// Convert new colour to RGBA
+		resultant_rgba = [
+			Math.max(0, Math.min(resultant_rgb.r, 255)),
+			Math.max(0, Math.min(resultant_rgb.g, 255)),
+			Math.max(0, Math.min(resultant_rgb.b, 255)),
+			255
+		]
+		return resultant_rgba
+	}
 }
 
 // render fractal image according on canvas according to parameters
