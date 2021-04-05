@@ -1,6 +1,7 @@
 // =================================
 // ----------Mathematics------------
 // =================================
+// Note that all complex numbers are stored as arrays with two elements in the form of [real, imaginary]. This helps to reduce the number of variables needed in the rendering process. Additionally, defining functions that take in multiple complex numbers represented by arrays allows easier complex number calculation.
 
 // return the product of two complex numbers
 function complex_product(c1, c2) {
@@ -22,7 +23,7 @@ function complex_magnitude_squared(c) {
 	return c[0] * c[0] + c[1] * c[1]
 }
 
-// function to return number of iterations processed before the magnitude of f(z) escapes the bailout magnitude given c value and that z initial = 0,
+// function to return number of iterations processed before the magnitude of f(z) escapes the bailout magnitude given c value and that z initial = 0. If the number of iterations calculated exceeds the iteration_depth, the function assumes that the c value never escapes under the given formula and thus returns Infinity.
 function calculate_escape_time(c, iteration_depth, bailout, formula) {
 	var z = [0, 0]
 	var i = 1
@@ -38,7 +39,7 @@ function calculate_escape_time(c, iteration_depth, bailout, formula) {
 	}
 }
 
-// function to return number of iterations processed before the magnitude of f(z) escapes the bailout magnitude given c value and that z initial = c,
+// function to return number of iterations processed before the magnitude of f(z) escapes the bailout magnitude given c value and that z initial = c as in the Julia set. If the number of iterations calculated exceeds the iteration_depth, the function assumes that the c value never escapes under the given formula and thus returns Infinity.
 function calculate_julia_escape_time(c, iteration_depth, bailout, formula, julia_value) {
 	var z = c
 	var i = 1
@@ -58,6 +59,7 @@ function calculate_julia_escape_time(c, iteration_depth, bailout, formula, julia
 // ------Fractal Algorithms---------
 // =================================
 
+// This dictionary provides a number of fractal algorithms that can be called when needed. Note that the keys indicate the name of the algorithm whereas the values are the corresponding function that takes in complex numbers c and z as inputs.
 var fractal_algorithms = {
 	"mandelbrot_algorhthm": function(z, c) {return complex_addition(complex_product(z, z), c)},
 	"mandelbrot_cubed_altorhthm": function(z, c) {return complex_addition(complex_product(complex_product(z, z), z), c)},
@@ -70,6 +72,7 @@ var fractal_algorithms = {
 // =================================
 // -----------Setup DOM-------------
 // =================================
+// This allows the javascript code to interact with the content on the html interface
 
 // Set up canvas
 var main_canvas = document.getElementById('fractal_viewport')
@@ -89,20 +92,12 @@ function update_status(message) {
 // -------Pixel manipulation--------
 // =================================
 
-// function to update image according to the pixel information and the x y coordinate of the pixel
-function update_pixel([r, g, b, l], x, y) {
-	main_canvas.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray([r, g, b, l]), 1, 1), x, y)
+// This function serves to update image according to the pixel information and the x y coordinate of the pixel. The colour of the pixel is given by the array [r, g, b, l]
+function update_pixel([r, g, b, a], x, y) {
+	main_canvas.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray([r, g, b, a]), 1, 1), x, y)
 }
 
-// Colouring algorithms
-colouring_algorithms = {
-	"linear": function(x){return x},
-	"square": function(x){return x*x},
-	"sqrt": function(x){return Math.sqrt(x)},
-	"log": function(x){return Math.log(x)},
-}
-
-// colour ramp
+// This is a dictionary that contains a number of pre-defined colour presets that the user can choose from
 var colour_presets = {
 	"greyscale": [[255, 255, 255,255], [0, 0, 0,255]],
 	"inverted_greyscale": [[0,0,0,255], [255,255,255,255]],
@@ -113,9 +108,21 @@ var colour_presets = {
 	"life": [[0, 105, 16,255], [255, 132, 38,255]],
 }
 
-function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_algorithm_name) {
+// This is a dictionary of colouring algorithms that helps to map escape time onto a specific colour in the gradient map created in map_colour()
+colouring_algorithms = {
+	"linear": function(x){return x},
+	"square": function(x){return x * x},
+	"sqrt": function(x){return Math.sqrt(x)},
+	"log": function(x){return Math.log(x)},
+}
+
+function map_colour(escape_time, max_depth, colour_preset, colouring_algorithm_name) {
 	// Calculate escape time percentile based on colouring algorithm
 	percentile = Math.min(colouring_algorithms[colouring_algorithm_name](escape_time) / colouring_algorithms[colouring_algorithm_name](max_depth), 1);
+
+	// Obtain start and end colour from colour_presets according to the user's chosen preset
+	begin_rgba = colour_presets[colour_preset][0]
+	end_rgba = colour_presets[colour_preset][1]
 
 	// Check if greyscale
 	if(begin_rgba[0] == begin_rgba[1] && begin_rgba[1] == begin_rgba[2] && end_rgba[0] == end_rgba[1] && end_rgba[1] == end_rgba[2]) {
@@ -158,7 +165,7 @@ function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_algo
 }
 
 // render fractal image according on canvas according to parameters
-function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, bailout, fractal_algorithm, mode, begin_rgba, end_rgba, colouring_algorithm_name, julia_value = [0, 0]) {
+function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, bailout, fractal_algorithm, mode, colour_preset, colouring_algorithm_name, julia_value = [0, 0]) {
 	// process rendering parameters to calculate scaled dimensions according to cangas size
 	var x_min = x_centre - (1 / zoom_level)
 	var x_max = x_centre + (1 / zoom_level)
@@ -177,11 +184,11 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, bailout
 					var escape_time = calculate_julia_escape_time([real, imaginary], iteration_depth, bailout, fractal_algorithm, julia_value)
 					// if fully escape
 					if(escape_time == Infinity) {
-						update_pixel(end_rgba, j - 1, i - 1)
+						update_pixel(colour_presets[colour_preset][1], j - 1, i - 1)
 					}
 					// if partially escape
 					else {
-						update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_algorithm_name), j - 1, i - 1)
+						update_pixel(map_colour(escape_time, iteration_depth, colour_preset, colouring_algorithm_name), j - 1, i - 1)
 					}
 					real = real + x_step
 				}
@@ -191,11 +198,11 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, bailout
 					var escape_time = calculate_escape_time([real, imaginary], iteration_depth, bailout,  fractal_algorithm)
 					// if fully escape
 					if(escape_time == Infinity) {
-						update_pixel(end_rgba, j - 1, i - 1)
+						update_pixel(colour_presets[colour_preset][1], j - 1, i - 1)
 					}
 					// if partially escape
 					else {
-						update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_algorithm_name), j - 1, i - 1)
+						update_pixel(map_colour(escape_time, iteration_depth, colour_preset, colouring_algorithm_name), j - 1, i - 1)
 					}
 					real = real + x_step
 				}
@@ -213,7 +220,7 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, bailout
 
 // Render button
 function render_trigger() {
-	// collect user input
+	// collect user input from html document object model
 	user_x_centre = parseFloat(document.getElementById("x_centre").value)
 	user_y_centre = parseFloat(document.getElementById("y_centre").value)
 	user_zoom_level = parseFloat(document.getElementById("zoom_level").value)
@@ -226,5 +233,5 @@ function render_trigger() {
 	user_julia_coordinate = [parseFloat(document.getElementById("julia_real").value), parseFloat(document.getElementById("julia_imaginary").value)]
 	console.log(user_julia_coordinate)
 	// render based on user parameters
-	render_fractal(user_x_centre, user_y_centre, user_zoom_level, user_iteration_depth, user_bailout, user_fractal_algorithm, user_julia_mode, colour_presets[user_colour_ramp][0], colour_presets[user_colour_ramp][1], user_colouring_algorithm, user_julia_coordinate)
+	render_fractal(user_x_centre, user_y_centre, user_zoom_level, user_iteration_depth, user_bailout, user_fractal_algorithm, user_julia_mode, user_colour_ramp, user_colouring_algorithm, user_julia_coordinate)
 }
