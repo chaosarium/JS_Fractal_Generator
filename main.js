@@ -158,7 +158,7 @@ function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_algo
 }
 
 // render fractal image according on canvas according to parameters
-function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, bailout, fractal_algorithm, julia_mode, begin_rgba, end_rgba, colouring_algorithm_name, julia_value = [0, 0]) {
+function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, bailout, fractal_algorithm, mode, begin_rgba, end_rgba, colouring_algorithm_name, julia_value = [0, 0]) {
 	// process rendering parameters to calculate scaled dimensions according to cangas size
 	var x_min = x_centre - (1 / zoom_level)
 	var x_max = x_centre + (1 / zoom_level)
@@ -172,22 +172,33 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, bailout
 	for (let i = 1; i <= canvas_height; i++) {
 		setTimeout(function() {
 			var real = x_min
-			for (let j = 1; j <= canvas_width; j++) {
-				if(julia_mode) {
+			if(mode == "julia_mode") {
+				for (let j = 1; j <= canvas_width; j++) {
 					var escape_time = calculate_julia_escape_time([real, imaginary], iteration_depth, bailout, fractal_algorithm, julia_value)
+					// if fully escape
+					if(escape_time == Infinity) {
+						update_pixel(end_rgba, j - 1, i - 1)
+					}
+					// if partially escape
+					else {
+						update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_algorithm_name), j - 1, i - 1)
+					}
+					real = real + x_step
 				}
-				else {
+			}
+			else {
+				for (let j = 1; j <= canvas_width; j++) {
 					var escape_time = calculate_escape_time([real, imaginary], iteration_depth, bailout,  fractal_algorithm)
+					// if fully escape
+					if(escape_time == Infinity) {
+						update_pixel(end_rgba, j - 1, i - 1)
+					}
+					// if partially escape
+					else {
+						update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_algorithm_name), j - 1, i - 1)
+					}
+					real = real + x_step
 				}
-				// if fully escape
-				if(escape_time == Infinity) {
-					update_pixel(end_rgba, j - 1, i - 1)
-				}
-				// if partially escape
-				else {
-					update_pixel(map_colour(escape_time, iteration_depth, begin_rgba, end_rgba, colouring_algorithm_name), j - 1, i - 1)
-				}
-				real = real + x_step
 			}
 			imaginary = imaginary - y_step
 			update_status("Calculation progress: " + Math.round(100 * (i / canvas_height)) + "%")
@@ -211,7 +222,7 @@ function render_trigger() {
 	user_fractal_algorithm = document.getElementById("fractal_algorithm").value
 	user_colouring_algorithm = document.getElementById("colouring_algorithm").value
 	user_colour_ramp = document.getElementById("colour_ramp").value
-	user_julia_mode = (document.getElementById("mode").value == "julia_mode")
+	user_julia_mode = document.getElementById("mode").value
 	user_julia_coordinate = [parseFloat(document.getElementById("julia_real").value), parseFloat(document.getElementById("julia_imaginary").value)]
 	console.log(user_julia_coordinate)
 	// render based on user parameters
