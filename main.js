@@ -120,11 +120,9 @@ colouring_algorithms = {
 function map_colour(escape_time, max_depth, colour_preset, colouring_algorithm_name) {
 	// Calculate escape time percentile based on colouring algorithm
 	percentile = Math.min(colouring_algorithms[colouring_algorithm_name](escape_time) / colouring_algorithms[colouring_algorithm_name](max_depth), 1);
-
 	// Obtain start and end colour from colour_presets according to the user's chosen preset
 	begin_rgba = colour_presets[colour_preset][0]
 	end_rgba = colour_presets[colour_preset][1]
-
 	// Check if greyscale
 	if(begin_rgba[0] == begin_rgba[1] && begin_rgba[1] == begin_rgba[2] && end_rgba[0] == end_rgba[1] && end_rgba[1] == end_rgba[2]) {
 		console.log("greyscale")
@@ -136,23 +134,19 @@ function map_colour(escape_time, max_depth, colour_preset, colouring_algorithm_n
 		]
 		return resultant_rgba
 	} 
-	// if colour
 	else {
 		// Convert RGB data to HSL
 		// Note that Please.js is an open source javascript library created by Fooidge for converting colour formats. For more information, see https://github.com/Fooidge/PleaseJS
 		begin_hsv = Please.RGB_to_HSV({r: begin_rgba[0], g: begin_rgba[1], b: begin_rgba[2]})
 		end_hsv = Please.RGB_to_HSV({r: end_rgba[0], g: end_rgba[1], b: end_rgba[2]})
-
 		// Calculate HSL gradient
 		resultant_hsv = [
 			begin_hsv.h + ((end_hsv.h - begin_hsv.h) * percentile),
 			begin_hsv.s + ((end_hsv.s - begin_hsv.s) * percentile),
 			begin_hsv.v + ((end_hsv.v - begin_hsv.v) * percentile)
 		]
-
 		// Convert new colour back to RGB
 		resultant_rgb = Please.HSV_to_RGB({h: resultant_hsv[0], s: resultant_hsv[1], v: resultant_hsv[2]})
-
 		// Convert new colour to RGBA
 		resultant_rgba = [
 			Math.max(0, Math.min(resultant_rgb.r, 255)),
@@ -161,7 +155,6 @@ function map_colour(escape_time, max_depth, colour_preset, colouring_algorithm_n
 			255
 		]
 		return resultant_rgba
-		// </note>
 	}
 }
 
