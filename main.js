@@ -116,6 +116,7 @@ colouring_algorithms = {
 	"log": function(x){return Math.log(x)},
 }
 
+// This function, when given the escape time, the iteration depth, the colouring algorithm given by the user, and the colour preset given by the user, creates a gradient map based on the colour preset and adjusted to the colouring algorithm and returns an intermediate colour on the gradient map
 function map_colour(escape_time, max_depth, colour_preset, colouring_algorithm_name) {
 	// Calculate escape time percentile based on colouring algorithm
 	percentile = Math.min(colouring_algorithms[colouring_algorithm_name](escape_time) / colouring_algorithms[colouring_algorithm_name](max_depth), 1);
@@ -164,7 +165,7 @@ function map_colour(escape_time, max_depth, colour_preset, colouring_algorithm_n
 	}
 }
 
-// render fractal image according on canvas according to parameters
+// This function is the main rendering algorithm that generates the visual representation of the fractal algorithm on the html canvas canvas according to user parameters
 function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, bailout, fractal_algorithm, mode, colour_preset, colouring_algorithm_name, julia_value = [0, 0]) {
 	// process rendering parameters to calculate scaled dimensions according to cangas size
 	var x_min = x_centre - (1 / zoom_level)
@@ -218,7 +219,7 @@ function render_fractal(x_centre, y_centre, zoom_level, iteration_depth, bailout
 // -------Events Handeling----------
 // =================================
 
-// Render button
+// This function will be called by the user when the render button is pressed on the html interface. It obtains all inputs by the user on the html form and sends them to the rendering algorithm to begin the rendering process.
 function render_trigger() {
 	// collect user input from html document object model
 	user_x_centre = parseFloat(document.getElementById("x_centre").value)
@@ -232,6 +233,6 @@ function render_trigger() {
 	user_julia_mode = document.getElementById("mode").value
 	user_julia_coordinate = [parseFloat(document.getElementById("julia_real").value), parseFloat(document.getElementById("julia_imaginary").value)]
 	console.log(user_julia_coordinate)
-	// render based on user parameters
+	// render fractal based on user inputs
 	render_fractal(user_x_centre, user_y_centre, user_zoom_level, user_iteration_depth, user_bailout, user_fractal_algorithm, user_julia_mode, user_colour_ramp, user_colouring_algorithm, user_julia_coordinate)
 }
