@@ -3,22 +3,22 @@
 // =================================
 // Note that all complex numbers are stored as arrays with two elements in the form of [real, imaginary]. This helps to reduce the number of variables needed in the rendering process. Additionally, defining functions that take in multiple complex numbers represented by arrays allows easier complex number calculation.
 
-// return the product of two complex numbers
+// return the product of two complex numbers as an array that represents a complex number
 function complex_product(c1, c2) {
 	return [c1[0] * c2[0] - c1[1] * c2[1], c1[0] * c2[1] + c2[0] * c1[1]]
 }
 
-// returns the sum of two complex numbers
+// returns the sum of two complex numbers as an array that represents a complex number
 function complex_addition(complex1, complex2) {
 	return [complex1[0] + complex2[0], complex1[1] + complex2[1]]
 }
 
-// returns the reciprocal of a complex numbers
+// returns the reciprocal of a complex numbers as an array that represents a complex number
 function complex_reciprocal(complex) {
 	return [complex[0] / ((complex[0] * complex[0]) + (complex[1] * complex[1])), (0 - complex[1]) / ((complex[0] * complex[0]) + (complex[1] * complex[1]))]
 }
 
-// returns the magnitude of complex number c
+// returns the magnitude of complex number c as float
 function complex_magnitude_squared(c) {
 	return c[0] * c[0] + c[1] * c[1]
 }
@@ -59,7 +59,7 @@ function calculate_julia_escape_time(c, iteration_depth, bailout, formula, julia
 // ------Fractal Algorithms---------
 // =================================
 
-// This dictionary provides a number of fractal algorithms that can be called when needed. Note that the keys indicate the name of the algorithm whereas the values are the corresponding function that takes in complex numbers c and z as inputs.
+// This dictionary provides a number of fractal algorithms that can be called when needed. Note that the keys indicate the name of the algorithm whereas the values are the corresponding function that takes in complex numbers c and z as inputs. All fractal algorithms in the dictionary returns the new z value as an array that represents a complex number
 var fractal_algorithms = {
 	"mandelbrot_algorhthm": function(z, c) {return complex_addition(complex_product(z, z), c)},
 	"mandelbrot_cubed_altorhthm": function(z, c) {return complex_addition(complex_product(complex_product(z, z), z), c)},
@@ -83,7 +83,7 @@ var canvas_context = main_canvas.getContext('2d')
 var renderer_console_output = ""
 // get control over status text
 var status_text = document.getElementById("status_text")
-// Function to update status text
+// Function to update status text to be the string that is passed into the function
 function update_status(message) {
 	status_text.innerHTML = message
 }
@@ -116,7 +116,7 @@ colouring_algorithms = {
 	"log": function(x){return Math.log(x)},
 }
 
-// This function, when given the escape time, the iteration depth, the colouring algorithm given by the user, and the colour preset given by the user, creates a gradient map based on the colour preset and adjusted to the colouring algorithm and returns an intermediate colour on the gradient map
+// This function, when given the escape time, the iteration depth, the colouring algorithm given by the user, and the colour preset given by the user, creates a gradient map based on the colour preset and adjusted to the colouring algorithm and returns an intermediate colour on the gradient map. The resulting colour is represented in an [r, g, b, a] array
 function map_colour(escape_time, max_depth, colour_preset, colouring_algorithm_name) {
 	// Calculate escape time percentile based on colouring algorithm
 	percentile = Math.min(colouring_algorithms[colouring_algorithm_name](escape_time) / colouring_algorithms[colouring_algorithm_name](max_depth), 1);
