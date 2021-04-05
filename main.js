@@ -31,7 +31,7 @@ function calculate_escape_time(c, iteration_depth, bailout, formula) {
 		i++
 	}
 	if (i > iteration_depth) {
-		return Infinity
+		return Infinity // It blew up
 	}
 	else {
 		return i
@@ -47,7 +47,7 @@ function calculate_julia_escape_time(c, iteration_depth, bailout, formula, julia
 		i++
 	}
 	if (i > iteration_depth) {
-		return Infinity
+		return Infinity // It blew up
 	}
 	else {
 		return i
@@ -131,6 +131,7 @@ function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_algo
 	// if colour
 	else {
 		// Convert RGB data to HSL
+		// Note that Please.js is an open source javascript library created by Fooidge for converting colour formats. For more information, see https://github.com/Fooidge/PleaseJS
 		begin_hsv = Please.RGB_to_HSV({r: begin_rgba[0], g: begin_rgba[1], b: begin_rgba[2]})
 		end_hsv = Please.RGB_to_HSV({r: end_rgba[0], g: end_rgba[1], b: end_rgba[2]})
 
@@ -152,6 +153,7 @@ function map_colour(escape_time, max_depth, begin_rgba, end_rgba, colouring_algo
 			255
 		]
 		return resultant_rgba
+		// </note>
 	}
 }
 
